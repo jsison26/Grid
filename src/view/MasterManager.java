@@ -25,7 +25,7 @@ import javax.swing.KeyStroke;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import controller.GridManagerController;
+import controller.MasterManagerController;
 import controller.Utilities;
 import model.Cluster;
 import model.Job;
@@ -33,7 +33,7 @@ import model.JobStatus;
 import model.JobType;
 
 
-public class GridManager extends JFrame {
+public class MasterManager extends JFrame {
 	private static final long serialVersionUID = -8973534341923708528L;
 	private ClusterPanel clusterPanel;
 	private JobPanel jobPanel;
@@ -44,17 +44,17 @@ public class GridManager extends JFrame {
 	private Properties prop;
 	private InputStream input;
 	private Path logFileDirectory;
-	private static final Logger logger = LoggerFactory.getLogger(GridManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(MasterManager.class);
 	
 	private static class GridManagerHelper {
-		private static final GridManager Instance = new GridManager("Master Manager");
+		private static final MasterManager Instance = new MasterManager("Master Manager");
 	}
 	
-	public static GridManager getInstance(){
+	public static MasterManager getInstance(){
 		return GridManagerHelper.Instance;
 	}
 	
-	private GridManager (String title) {
+	private MasterManager (String title) {
 		super(title);
 		
 		try {
@@ -81,7 +81,7 @@ public class GridManager extends JFrame {
 
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent w){
-				GridManagerController.getInstance().stop();
+				MasterManagerController.getInstance().stop();
 				dispose();
 				System.gc();
 			}
@@ -102,13 +102,13 @@ public class GridManager extends JFrame {
 	
 	private void initClusterPanel() {
 		clusterPanel = new ClusterPanel();
-		setClusterData(GridManagerController.getInstance().getClusters());
+		setClusterData(MasterManagerController.getInstance().getClusters());
 	}
 	
 	private void initJobPanel() {
 		jobPanel = new JobPanel();
 		
-		List<Job> queuedJobs = GridManagerController.getInstance().getQueuedJobs();
+		List<Job> queuedJobs = MasterManagerController.getInstance().getQueuedJobs();
 		setJobData(queuedJobs);
 		
 		jobPanel.setJobTableListener(new JobTableListener(){
@@ -136,12 +136,12 @@ public class GridManager extends JFrame {
 	
 	private void initNewJobPanel() {
 		newJobPanel = new NewJobPanel();
-		setJobTypeData(GridManagerController.getInstance().getJobTypes());
+		setJobTypeData(MasterManagerController.getInstance().getJobTypes());
 		
 		newJobPanel.setJobListener(new JobListener(){
 			public void jobEventOccurred(Job job) {
 				try {
-					GridManagerController.getInstance().addJob(job);
+					MasterManagerController.getInstance().addJob(job);
 					logger.info("Job added: [{}]", job.getJobName());
 				}
 				catch (SQLException e) {
@@ -233,7 +233,7 @@ public class GridManager extends JFrame {
 				} catch (SQLException e2) {
 					logger.error("Could not reload job records from the database after delete.");
 				}
-				List<Job> queuedJobs = GridManagerController.getInstance().getQueuedJobs();
+				List<Job> queuedJobs = MasterManagerController.getInstance().getQueuedJobs();
 				setJobData(queuedJobs);
 				refreshJobData();
 				
@@ -242,7 +242,7 @@ public class GridManager extends JFrame {
 				} catch (SQLException e1) {
 					logger.error("Could not reload job type records from the database after delete.");
 				}
-				setJobTypeData(GridManagerController.getInstance().getJobTypes());
+				setJobTypeData(MasterManagerController.getInstance().getJobTypes());
 				refreshJobTypeData();
 				
 				logger.info("All data reloaded.");
@@ -259,7 +259,7 @@ public class GridManager extends JFrame {
 					logger.error("Could not reload cluster records from the database.");
 					logger.error(Utilities.getStackTrace(e3));
 				}
-				setClusterData(GridManagerController.getInstance().getClusters());
+				setClusterData(MasterManagerController.getInstance().getClusters());
 				refreshClusterData();
 				
 				try {
@@ -268,7 +268,7 @@ public class GridManager extends JFrame {
 					logger.error("Could not reload job records from the database.");
 					logger.error(Utilities.getStackTrace(e2));
 				}
-				List<Job> queuedJobs = GridManagerController.getInstance().getQueuedJobs();
+				List<Job> queuedJobs = MasterManagerController.getInstance().getQueuedJobs();
 				setJobData(queuedJobs);
 				refreshJobData();
 				
@@ -278,7 +278,7 @@ public class GridManager extends JFrame {
 					logger.error("Could not reload job type records from the database.");
 					logger.error(Utilities.getStackTrace(e1));
 				}
-				setJobTypeData(GridManagerController.getInstance().getJobTypes());
+				setJobTypeData(MasterManagerController.getInstance().getJobTypes());
 				refreshJobTypeData();
 				
 				logger.info("All data reloaded.");
@@ -294,11 +294,11 @@ public class GridManager extends JFrame {
 	}
 	
 	private void sendJobCancel(Job job) throws SQLException {
-		GridManagerController.getInstance().sendJobCancel(job);
+		MasterManagerController.getInstance().sendJobCancel(job);
 	}
 	
 	public void reloadClusters() throws SQLException {
-		GridManagerController.getInstance().reloadClusters();
+		MasterManagerController.getInstance().reloadClusters();
 	}
 	
 	public void setClusterData(List<Cluster> clusterDB) {
@@ -310,7 +310,7 @@ public class GridManager extends JFrame {
 	}
 	
 	public void reloadJobs() throws SQLException {
-		GridManagerController.getInstance().reloadJobsAll();
+		MasterManagerController.getInstance().reloadJobsAll();
 	}
 		
 	public void setJobData(List<Job> jobDB) {
@@ -322,7 +322,7 @@ public class GridManager extends JFrame {
 	}
 	
 	public void reloadJobTypes() throws SQLException {
-		GridManagerController.getInstance().reloadJobTypesAll();
+		MasterManagerController.getInstance().reloadJobTypesAll();
 	}
 	
 	public void setJobTypeData(List<JobType> jobTypeDB) {
@@ -334,7 +334,7 @@ public class GridManager extends JFrame {
 	}
 	
 	public void truncateJobs() throws SQLException {
-		GridManagerController.getInstance().truncateJobs();
+		MasterManagerController.getInstance().truncateJobs();
 	}
 	
 }

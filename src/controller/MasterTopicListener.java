@@ -36,7 +36,7 @@ public class MasterTopicListener implements MessageListener {
             			addClusterRequestQueue(cluster.getClusterName());
             			addClusterAdvisoryQueue(cluster.getClusterName());
             			
-            			boolean clusterExist = GridManagerController.getInstance().getClusterByClusterName(cluster.getClusterName()) == null ? false : true;
+            			boolean clusterExist = MasterManagerController.getInstance().getClusterByClusterName(cluster.getClusterName()) == null ? false : true;
             			if(!clusterExist)
             				return;
             			
@@ -61,19 +61,19 @@ public class MasterTopicListener implements MessageListener {
     }
     
     private void addClusterRequestQueue(String topic) throws Exception {
-		GridManagerController.getInstance().addClusterRequestQueue(topic);
+		MasterManagerController.getInstance().addClusterRequestQueue(topic);
 	}
 	
 	private void addClusterAdvisoryQueue(String topic) throws Exception {
-		GridManagerController.getInstance().addClusterAdvisoryQueue(topic);
+		MasterManagerController.getInstance().addClusterAdvisoryQueue(topic);
 	}
     
     private void updateCluster(Cluster cluster) throws SQLException {
-    	GridManagerController.getInstance().updateCluster(cluster);
+    	MasterManagerController.getInstance().updateCluster(cluster);
     }
     
     private void updateJob(Job job) throws SQLException {
-    	GridManagerController.getInstance().updateJob(job);
+    	MasterManagerController.getInstance().updateJob(job);
     }
 
 }

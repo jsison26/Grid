@@ -24,15 +24,15 @@ import model.JobType;
 import model.JobTypeDB;
 import model.TopicMessage;
 import model.TopicMessageType;
-import view.GridManager;
+import view.MasterManager;
 
-public class GridManagerController {
+public class MasterManagerController {
 	private ClusterDB clusterDB;
 	private JobDB jobDB;
 	private JobTypeDB jobTypeDB;
 	private Properties prop = new Properties();
 	private InputStream input = null;
-	private static final Logger logger =  LoggerFactory.getLogger(GridManagerController.class);
+	private static final Logger logger =  LoggerFactory.getLogger(MasterManagerController.class);
 	
 	private TopicSubscriber consumer;
 	private AdvisorySubscriber advisoryConsumer;
@@ -42,14 +42,14 @@ public class GridManagerController {
 	
 	
 	private static class GridManagerControllerHelper {
-		private static final GridManagerController Instance = new GridManagerController();
+		private static final MasterManagerController Instance = new MasterManagerController();
 	}
 	
-	public static GridManagerController getInstance() {
+	public static MasterManagerController getInstance() {
 		return GridManagerControllerHelper.Instance;
 	}
 	
-	private GridManagerController() {
+	private MasterManagerController() {
 		clusterDB = new ClusterDB();
 		try {
 			reloadClusters();
@@ -131,7 +131,7 @@ public class GridManagerController {
 	}
 	
 	private void startGridManager() {
-		GridManager.getInstance();
+		MasterManager.getInstance();
 	}
 
 	private void startTopic() {
@@ -158,8 +158,8 @@ public class GridManagerController {
 			jobId = jobDB.addJob(job);
 			if (jobId > 0) {
 				job.setJobId(jobId);
-				GridManager.getInstance().setJobData(jobDB.getJobs());
-				GridManager.getInstance().refreshJobData();
+				MasterManager.getInstance().setJobData(jobDB.getJobs());
+				MasterManager.getInstance().refreshJobData();
 			}
 		}
 		
@@ -189,8 +189,8 @@ public class GridManagerController {
 			jobDB.updateJob(job);
 
 			List<Job> queuedJobs = getQueuedJobs();
-			GridManager.getInstance().setJobData(queuedJobs);
-			GridManager.getInstance().refreshJobData();
+			MasterManager.getInstance().setJobData(queuedJobs);
+			MasterManager.getInstance().refreshJobData();
 		}
 	}
 	
@@ -236,8 +236,8 @@ public class GridManagerController {
 			else
 				clusterDB.updateCluster(cluster);
 			
-			GridManager.getInstance().setClusterData(clusterDB.getClusters());
-			GridManager.getInstance().refreshClusterData();
+			MasterManager.getInstance().setClusterData(clusterDB.getClusters());
+			MasterManager.getInstance().refreshClusterData();
 		}
 	}
 	

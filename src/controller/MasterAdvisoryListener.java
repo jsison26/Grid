@@ -62,7 +62,7 @@ public class MasterAdvisoryListener implements MessageListener {
             			removeClusterAdvisoryQueue(topic);
             			removeClusterRequestQueue(topic);
             			
-            			cluster = GridManagerController.getInstance().getClusterByClusterName(topic);
+            			cluster = MasterManagerController.getInstance().getClusterByClusterName(topic);
             			if(cluster == null)
             				return;
             			
@@ -107,14 +107,14 @@ public class MasterAdvisoryListener implements MessageListener {
     }
 	
 	private void updateCluster(Cluster cluster) throws SQLException {
-		GridManagerController.getInstance().updateCluster(cluster);
+		MasterManagerController.getInstance().updateCluster(cluster);
 	}
 	
 	private void removeClusterRequestQueue(String topic) throws Exception {
-		GridManagerController.getInstance().removeClusterRequestQueue(topic);
+		MasterManagerController.getInstance().removeClusterRequestQueue(topic);
 	}
 	
 	private void removeClusterAdvisoryQueue(String topic) throws Exception {
-		GridManagerController.getInstance().removeClusterAdvisoryQueue(topic);
+		MasterManagerController.getInstance().removeClusterAdvisoryQueue(topic);
 	}
 }
