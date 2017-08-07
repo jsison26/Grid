@@ -16,9 +16,9 @@ public class DBAccess {
 	private static Vector<Connection> connectionPool = new Vector<Connection>();
 	private static final int MAX_POOL_SIZE = 10;
 	
-	private String url = "jdbc:mysql://192.168.0.1/grid";
+	private String url = "jdbc:mysql://192.168.99.100:3306/dev?verifyServerCertificate=false&useSSL=true";
 	private String userName = "root";
-	private String password = "admin";
+	private String password = "Pass1word";
 	
 	private DBAccess() {
 		initialize();
@@ -98,8 +98,9 @@ public class DBAccess {
 		if (conn.isValid(1_000))
 			conn = createNewConnectionForPool();
 		
-		String query = " insert into jobs (jobId, jobName, jobTypeId, status, clusterName) "
-				+ " values (null, ?, ?, ?, ?) ";
+		String query = " insert into jobs (jobId, jobName, jobTypeId, status,"
+				+ " clusterId, commandLine, commandArguments, workingDirectory) "
+				+ " values (null, ?, ?, ?, ?, ?, ?, ?) ";
 		
 		try (PreparedStatement st = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {			
 			if (job.getJobName() != null && job.getJobName().length() > 0)
@@ -115,6 +116,21 @@ public class DBAccess {
 				st.setNull(paramIndex++, Types.CHAR);
 			
 			st.setInt(paramIndex++, job.getClusterId());
+			
+			if (job.getCommandLine() != null && job.getCommandLine().length() > 0)
+				st.setString(paramIndex++, job.getCommandLine());
+			else
+				st.setNull(paramIndex++, Types.CHAR);
+			
+			if (job.getCommandArguments() != null && job.getCommandArguments().length() > 0)
+				st.setString(paramIndex++, job.getCommandArguments());
+			else
+				st.setNull(paramIndex++, Types.CHAR);
+			
+			if (job.getWorkingDirectory() != null && job.getWorkingDirectory().length() > 0)
+				st.setString(paramIndex++, job.getWorkingDirectory());
+			else
+				st.setNull(paramIndex++, Types.CHAR);
 			
 			st.executeUpdate();			
 			ResultSet generatedKeys = st.getGeneratedKeys();
@@ -142,7 +158,10 @@ public class DBAccess {
 			+ " set "  + (job.getJobName() == null ? " jobName = null " : " jobName = ? ")
 				+ " ,jobTypeId = ? "
 				+ (job.getStatus() == null ? " ,status = null " : " ,status = ? ")
-				+ " ,clusterName = ? "
+				+ " ,clusterId = ? "
+				+ (job.getCommandLine() == null ? " ,commandLine = null " : " ,commandLine = ? ")
+				+ (job.getCommandArguments() == null ? " ,commandArguments = null " : " ,commandArguments = ? ")
+				+ (job.getWorkingDirectory() == null ? " ,workingDirectory = null " : " ,workingDirectory = ? ")
 			+ " where jobId = ?";
 		
 		try (PreparedStatement st = conn.prepareStatement(query);) {
@@ -150,6 +169,9 @@ public class DBAccess {
 			st.setInt(paramIndex++, job.getJobTypeId());
 			if(job.getStatus() != null) st.setString(paramIndex++, job.getStatus());
 			st.setInt(paramIndex++, job.getClusterId());
+			if(job.getCommandLine() != null) st.setString(paramIndex++, job.getCommandLine());
+			if(job.getCommandArguments() != null) st.setString(paramIndex++, job.getCommandArguments());
+			if(job.getWorkingDirectory() != null) st.setString(paramIndex++, job.getWorkingDirectory());
 			st.setInt(paramIndex++, job.getJobId());
 			
 			st.executeUpdate();		
@@ -198,8 +220,8 @@ public class DBAccess {
 		if (conn.isValid(1_000))
 			conn = createNewConnectionForPool();
 		
-		String query = " select j.jobId, j.jobName, j.jobTypeId, jt.jobTypeName, "
-			+ " j.status, j.clusterId,  c.clusterName "
+		String query = " select j.jobId, j.jobName, j.jobTypeId, jt.jobTypeName, j.status, "
+				+ " j.clusterId,  c.clusterName, j.commandLine, j.commandArguments, j.workingDirectory "
 			+ " from jobs j "
 				+ " left outer join jobTypes jt "
 				+ " on j.jobTypeId = jt.jobTypeId "
@@ -218,6 +240,9 @@ public class DBAccess {
 				job.setStatus(rs.getString("status"));
 				job.setClusterId(rs.getInt("clusterId"));
 				job.setClusterName(rs.getString("clusterName"));
+				job.setCommandLine(rs.getString("commandLine"));
+				job.setCommandArguments(rs.getString("commandArguments"));
+				job.setWorkingDirectory(rs.getString("workingDirectory"));
 				
 				result.add(job);
 	        }
@@ -236,8 +261,8 @@ public class DBAccess {
 		if (conn.isValid(1_000))
 			conn = createNewConnectionForPool();
 		
-		String query = " select j.jobId, j.jobName, j.jobTypeId, jt.jobTypeName, "
-			+ " j.status, j.clusterId, c.clusterName "
+		String query = " select j.jobId, j.jobName, j.jobTypeId, jt.jobTypeName, j.status, "
+				+ " j.clusterId, c.clusterName, j.commandLine, j.commandArguments, j.workingDirectory "
 			+ " from jobs j "
 				+ " left outer join jobTypes jt "
 				+ " on j.jobTypeId = jt.jobTypeId "
@@ -258,6 +283,9 @@ public class DBAccess {
 				job.setStatus(rs.getString("status"));
 				job.setClusterId(rs.getInt("clusterId"));
 				job.setClusterName(rs.getString("clusterName"));
+				job.setCommandLine(rs.getString("commandLine"));
+				job.setCommandArguments(rs.getString("commandArguments"));
+				job.setWorkingDirectory(rs.getString("workingDirectory"));
 				
 				result.add(job);
 	        }
@@ -362,7 +390,7 @@ public class DBAccess {
 		if (conn.isValid(1_000))
 			conn = createNewConnectionForPool();
 		
-		String query=" select clusterId, clusterName, directoryPath, moduleCount, status "
+		String query=" select clusterId, clusterName, status "
 			+ " from clusters "
 			+ " where clusterName = ? ";
 		
@@ -392,7 +420,7 @@ public class DBAccess {
 			conn = createNewConnectionForPool();
 		
 		String query = " select jt.jobTypeId, jt.jobTypeName "
-			+ " from jobtypes jt "
+			+ " from jobTypes jt "
 			+ " order by jt.jobTypeName ";
 		
 		try (PreparedStatement st = conn.prepareStatement(query);) {	

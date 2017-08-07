@@ -33,7 +33,7 @@ import model.JobStatus;
 import model.JobType;
 
 
-public class MasterManager extends JFrame {
+public class MasterManagerFrame extends JFrame {
 	private static final long serialVersionUID = -8973534341923708528L;
 	private ClusterPanel clusterPanel;
 	private JobPanel jobPanel;
@@ -44,17 +44,17 @@ public class MasterManager extends JFrame {
 	private Properties prop;
 	private InputStream input;
 	private Path logFileDirectory;
-	private static final Logger logger = LoggerFactory.getLogger(MasterManager.class);
+	private static final Logger logger = LoggerFactory.getLogger(MasterManagerFrame.class);
 	
 	private static class GridManagerHelper {
-		private static final MasterManager Instance = new MasterManager("Master Manager");
+		private static final MasterManagerFrame Instance = new MasterManagerFrame("Master Manager");
 	}
 	
-	public static MasterManager getInstance(){
+	public static MasterManagerFrame getInstance(){
 		return GridManagerHelper.Instance;
 	}
 	
-	private MasterManager (String title) {
+	private MasterManagerFrame (String title) {
 		super(title);
 		
 		try {
@@ -136,7 +136,9 @@ public class MasterManager extends JFrame {
 	
 	private void initNewJobPanel() {
 		newJobPanel = new NewJobPanel();
-		setJobTypeData(MasterManagerController.getInstance().getJobTypes());
+		
+		newJobPanel.setJobTypeData(MasterManagerController.getInstance().getJobTypes());
+		newJobPanel.setClusterData(MasterManagerController.getInstance().getClusters());
 		
 		newJobPanel.setJobListener(new JobListener(){
 			public void jobEventOccurred(Job job) {
@@ -243,7 +245,7 @@ public class MasterManager extends JFrame {
 					logger.error("Could not reload job type records from the database after delete.");
 				}
 				setJobTypeData(MasterManagerController.getInstance().getJobTypes());
-				refreshJobTypeData();
+				newJobPanel.refresh();
 				
 				logger.info("All data reloaded.");
 			}
@@ -278,8 +280,7 @@ public class MasterManager extends JFrame {
 					logger.error("Could not reload job type records from the database.");
 					logger.error(Utilities.getStackTrace(e1));
 				}
-				setJobTypeData(MasterManagerController.getInstance().getJobTypes());
-				refreshJobTypeData();
+				newJobPanel.refresh();
 				
 				logger.info("All data reloaded.");
 			}
@@ -327,10 +328,6 @@ public class MasterManager extends JFrame {
 	
 	public void setJobTypeData(List<JobType> jobTypeDB) {
 		newJobPanel.setJobTypeData(jobTypeDB);
-	}
-	
-	public void refreshJobTypeData() {
-		newJobPanel.refresh();
 	}
 	
 	public void truncateJobs() throws SQLException {

@@ -12,7 +12,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.advisory.AdvisorySupport;
 
 public class AdvisorySubscriber {
-	private final String connectionUri = "tcp://GENEVIEV:61626";
+	private final String connectionUri = "tcp://192.168.99.100:61616";
     private Connection connection;
     private Session session;
     private Destination destination;

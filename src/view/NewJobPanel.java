@@ -16,10 +16,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableRowSorter;
 
-
+import controller.MasterManagerController;
+import model.Cluster;
 import model.Job;
 import model.JobStatus;
 import model.JobType;
@@ -31,13 +32,23 @@ public class NewJobPanel extends JPanel implements ActionListener {
 	private JPanel formPanel;
 	private JPanel infoPanel;
 	private JComboBox<String> comboBox;
+	private JTextField jobNameField;
+	private JTextField commandLineField;
+	private JTextField commandArgumentsField;
+	private JTextField workingDirectoryField;
+	private JComboBox<String> clusterBox;
 	private JLabel jobTypeLabel;
+	private JLabel jobNameLabel;
+	private JLabel commandLineLabel;
+	private JLabel commandArgumentsLabel;
+	private JLabel workingDirectoryLabel;
+	private JLabel clusterLabel;
 	private JButton addButton;
 	private JobListener jobListener;
 	private List<JobType> jobTypes;
+	private List<Cluster> clusters;
 	private JTable jobTypeTable;
 	private JobTypeTableModel jobTypeTableModel;
-	private TableRowSorter<JobTypeTableModel> jobTypeSorter;
 	private static final Insets WEST_INSETS = new Insets(5, 0, 5, 5);
 	private static final Insets EAST_INSETS = new Insets(5, 5, 5, 0);
 	   
@@ -52,6 +63,17 @@ public class NewJobPanel extends JPanel implements ActionListener {
 	    GridBagConstraints gbc;
 	    
 	    // form panel starts
+	    
+	    gbc = createGbc(0, y);
+	    jobNameLabel = new JLabel("Job Name");
+	    formPanel.add(jobNameLabel, gbc);
+	    
+	    gbc = createGbc(1, y);
+	    jobNameField = new JTextField();
+	    formPanel.add(jobNameField, gbc);
+	    
+	    y++; // new row
+
 	    gbc = createGbc(0, y);
 	    jobTypeLabel = new JLabel("Job Type");
 	    formPanel.add(jobTypeLabel, gbc);
@@ -59,6 +81,46 @@ public class NewJobPanel extends JPanel implements ActionListener {
 	    gbc = createGbc(1, y);
 	    comboBox = new JComboBox<String>();
 	    formPanel.add(comboBox, gbc);
+	    
+	    y++; // new row
+	    
+	    gbc = createGbc(0, y);
+	    commandLineLabel = new JLabel("Command Line");
+	    formPanel.add(commandLineLabel, gbc);
+	    
+	    gbc = createGbc(1, y);
+	    commandLineField = new JTextField();
+	    formPanel.add(commandLineField, gbc);
+	    
+	    y++; // new row
+	    
+	    gbc = createGbc(0, y);
+	    commandArgumentsLabel = new JLabel("Command Argument");
+	    formPanel.add(commandArgumentsLabel, gbc);
+	    
+	    gbc = createGbc(1, y);
+	    commandArgumentsField = new JTextField();
+	    formPanel.add(commandArgumentsField, gbc);
+	    
+	    y++; // new row
+	    
+	    gbc = createGbc(0, y);
+	    workingDirectoryLabel = new JLabel("Working Directory");
+	    formPanel.add(workingDirectoryLabel, gbc);
+	    
+	    gbc = createGbc(1, y);
+	    workingDirectoryField = new JTextField();
+	    formPanel.add(workingDirectoryField, gbc);
+	    
+	    y++; // new row
+	    
+	    gbc = createGbc(0, y);
+	    clusterLabel = new JLabel("Cluster");
+	    formPanel.add(clusterLabel, gbc);
+	    
+	    gbc = createGbc(1, y);
+	    clusterBox = new JComboBox<String>();
+	    formPanel.add(clusterBox, gbc);
 	    
 	    y++; // new row
 	    
@@ -113,10 +175,20 @@ public class NewJobPanel extends JPanel implements ActionListener {
 	public void setJobTypeData(List<JobType> db){
 		jobTypeTableModel.setData(db);
 		jobTypes = db;
+		comboBox.removeAllItems();
 		for(JobType jt: jobTypes){
 			comboBox.addItem(jt.getJobTypeName());
 		}
 		jobTypeTable.setAutoCreateRowSorter(true);
+		System.out.println("setJobTypeData");
+	}
+	
+	public void setClusterData(List<Cluster> db){
+		clusters = db;
+		clusterBox.removeAllItems();
+		for(Cluster c: clusters){
+			clusterBox.addItem(c.getClusterName());
+		}
 	}
 	
 	public void setJobListener(JobListener jobListener){
@@ -124,6 +196,8 @@ public class NewJobPanel extends JPanel implements ActionListener {
 	}
 	
 	public void refresh(){
+		setJobTypeData(MasterManagerController.getInstance().getJobTypes());
+		setClusterData(MasterManagerController.getInstance().getClusters());
 		jobTypeTableModel.fireTableDataChanged();
 	}
 
@@ -134,25 +208,37 @@ public class NewJobPanel extends JPanel implements ActionListener {
 		if(clicked == addButton){
 			int jobTypeId = -1;
 			String jobTypeName = "";
+			int clusterId = -1;
+			String clusterName = "";
 			
 			for(JobType jt: jobTypes){
-				if(comboBox.getSelectedItem().toString().equals(jt.getJobTypeName())){
+				if(jt.getJobTypeName().equals(comboBox.getSelectedItem().toString())){
 					jobTypeId = jt.getJobTypeId();
 					jobTypeName = jt.getJobTypeName();
 					
 					break;
 				}	
 			}
+			
+			for(Cluster c: clusters){
+				if(c.getClusterName().equals(clusterBox.getSelectedItem().toString())){
+					clusterId = c.getClusterId();
+					clusterName = c.getClusterName();					
+					break;
+				}	
+			}
 		
-			if(jobListener != null){
-				long jobNum = (long) (Math.random() * 999999999999L);
-				String jobName = "JOB" + jobNum;
-				
+			if(jobListener != null){			
 				Job job = new Job();
-				job.setJobName(jobName);
+				job.setJobName(jobNameField.getText());
 				job.setJobTypeId(jobTypeId);
 				job.setJobTypeName(jobTypeName);
 				job.setStatus(JobStatus.QUEUED);
+				job.setCommandLine(commandLineField.getText());
+				job.setCommandArguments(commandArgumentsField.getText());
+				job.setWorkingDirectory(workingDirectoryField.getText());
+				job.setClusterId(clusterId);
+				job.setClusterName(clusterName);
 
 				jobListener.jobEventOccurred(job);
 			}

@@ -19,7 +19,7 @@ import com.google.gson.Gson;
 import model.TopicMessage;
 
 public class TopicPublisher {
-	private final String connectionUri = "tcp://GENEVIEV:61626";
+	private final String connectionUri = "tcp://192.168.99.100:61616";
     private Connection connection;
     private Session session;
     private MessageProducer publisher;

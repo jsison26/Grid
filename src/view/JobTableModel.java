@@ -12,7 +12,7 @@ public class JobTableModel extends AbstractTableModel {
 	private static final long serialVersionUID = 8262103782426454728L;
 	private List<Job> db;
 	private String[] colNames = {"Job ID", "Job Name", "Job Type ID", "Job Type", "Status"
-			, "Cluster ID", "Cluster Name"};
+			, "Cluster ID", "Cluster Name", "Command Line", "Command Arguments", "Working Directory"};
 	
 	public JobTableModel(){
 		
@@ -56,6 +56,12 @@ public class JobTableModel extends AbstractTableModel {
 			return job.getClusterId();
 		case 6:
 			return job.getClusterName();
+		case 7:
+			return job.getCommandLine();
+		case 8:
+			return job.getCommandArguments();
+		case 9:
+			return job.getWorkingDirectory();
 		default:
 			return null;
 		}
@@ -78,6 +84,12 @@ public class JobTableModel extends AbstractTableModel {
 		case 5:
 			return Integer.class;
 		case 6:
+			return String.class;
+		case 7:
+			return String.class;
+		case 8:
+			return String.class;
+		case 9:
 			return String.class;
 		default:
 			return null;

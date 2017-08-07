@@ -29,7 +29,7 @@ public class JobDB {
 		try {
 			do{
 				jobId = DBAccess.getInstance().createJob(job);			
-				if (jobId < 0) {
+				if (jobId >= 0) {
 					job.setJobId(jobId);
 					jobs.add(job);
 				}
@@ -46,16 +46,6 @@ public class JobDB {
 		writeLock.lock();
 		try {
 			DBAccess.getInstance().updateJob(job);
-			
-			for (Job j: jobs) {
-				if (j.equals(job)) {
-					j.setJobName(job.getJobName());
-					j.setJobTypeId(job.getJobTypeId());
-					j.setJobTypeName(job.getJobTypeName());
-					j.setStatus(job.getStatus());
-					break;
-				}
-			}
 		}
 		finally {
 			writeLock.unlock();

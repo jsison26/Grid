@@ -1,11 +1,8 @@
 package controller;
 
-import java.io.FileInputStream;
-import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.swing.SwingWorker;
@@ -24,14 +21,12 @@ import model.JobType;
 import model.JobTypeDB;
 import model.TopicMessage;
 import model.TopicMessageType;
-import view.MasterManager;
+import view.MasterManagerFrame;
 
 public class MasterManagerController {
 	private ClusterDB clusterDB;
 	private JobDB jobDB;
 	private JobTypeDB jobTypeDB;
-	private Properties prop = new Properties();
-	private InputStream input = null;
 	private static final Logger logger =  LoggerFactory.getLogger(MasterManagerController.class);
 	
 	private TopicSubscriber consumer;
@@ -81,19 +76,10 @@ public class MasterManagerController {
 		clusterRequestQueues = new ConcurrentHashMap<String, TopicPublisher>();
 		clusterAdvisoryQueues = new ConcurrentHashMap<String, AdvisorySubscriber>();
 		
-		//load app configs
-		try{
-			input = new FileInputStream("app.properties");
-			prop.load(input);
-		}
-		catch(Exception e){
-			logger.error("Failed to load config file: app.properties");
-			logger.error(Utilities.getStackTrace(e));
-		}
 	}
 	
 	public void start() {
-		startGridManager();
+		startMasterManagerFrame();
 		startTopic();
 	}
 	
@@ -130,8 +116,8 @@ public class MasterManagerController {
 		}
 	}
 	
-	private void startGridManager() {
-		MasterManager.getInstance();
+	private void startMasterManagerFrame() {
+		MasterManagerFrame.getInstance();
 	}
 
 	private void startTopic() {
@@ -145,9 +131,7 @@ public class MasterManagerController {
 				logger.info("Topic consumer listener for MASTER started.");
 				return null;
 			}
-			
 		};
-		
 		topicWorker.execute();
 	}
 		
@@ -158,8 +142,8 @@ public class MasterManagerController {
 			jobId = jobDB.addJob(job);
 			if (jobId > 0) {
 				job.setJobId(jobId);
-				MasterManager.getInstance().setJobData(jobDB.getJobs());
-				MasterManager.getInstance().refreshJobData();
+				MasterManagerFrame.getInstance().setJobData(jobDB.getJobs());
+				MasterManagerFrame.getInstance().refreshJobData();
 			}
 		}
 		
@@ -189,8 +173,8 @@ public class MasterManagerController {
 			jobDB.updateJob(job);
 
 			List<Job> queuedJobs = getQueuedJobs();
-			MasterManager.getInstance().setJobData(queuedJobs);
-			MasterManager.getInstance().refreshJobData();
+			MasterManagerFrame.getInstance().setJobData(queuedJobs);
+			MasterManagerFrame.getInstance().refreshJobData();
 		}
 	}
 	
@@ -236,8 +220,8 @@ public class MasterManagerController {
 			else
 				clusterDB.updateCluster(cluster);
 			
-			MasterManager.getInstance().setClusterData(clusterDB.getClusters());
-			MasterManager.getInstance().refreshClusterData();
+			MasterManagerFrame.getInstance().setClusterData(clusterDB.getClusters());
+			MasterManagerFrame.getInstance().refreshClusterData();
 		}
 	}
 	

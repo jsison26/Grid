@@ -6,9 +6,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
+import javax.swing.BoxLayout;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
 import model.Job;
@@ -62,6 +64,9 @@ public class JobPanel extends JPanel {
 				}
 			}
 		});
+		
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		add(new JScrollPane(jobTable));
 	}
 	
 	public void setJobData(List<Job> db){
@@ -92,6 +97,9 @@ public class JobPanel extends JPanel {
 		selectedJob.setJobTypeName(getCellValue(jobTable, row, "Job Type"));
 		selectedJob.setStatus(getCellValue(jobTable, row, "Status"));
 		selectedJob.setClusterName(getCellValue(jobTable, row, "Cluster Name"));
+		selectedJob.setCommandLine(getCellValue(jobTable, row, "Command Line"));
+		selectedJob.setCommandArguments(getCellValue(jobTable, row, "Command Arguments"));
+		selectedJob.setWorkingDirectory(getCellValue(jobTable, row, "Working Directory"));
 	}
 	
 	public void restoreSelectedRows(JTable jtable, int anchorIndex, int leadIndex) {
@@ -105,9 +113,6 @@ public class JobPanel extends JPanel {
 			jtable.setRowSelectionInterval(1, 1);
 		}
 		else {
-			System.out.println(">>> jtable.getRowCount()=" +  jtable.getRowCount()); // out of bound bug
-			System.out.println(">>> anchorIndex=" + anchorIndex); // out of bound bug
-			System.out.println(">>> leadIndex=" +  leadIndex); // out of bound bug
 			jtable.setRowSelectionInterval(anchorIndex, leadIndex);
 		}
 	}

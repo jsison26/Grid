@@ -8,6 +8,9 @@ public class Job {
 	private String status;
 	private int clusterId;
 	private String clusterName;
+	private String commandLine;
+	private String commandArguments;
+	private String workingDirectory;
 	
 	public int getClusterId() {
 		return clusterId;
@@ -65,12 +68,38 @@ public class Job {
 		this.clusterName = clusterName;
 	}
 
+	public String getCommandLine() {
+		return commandLine;
+	}
+
+	public void setCommandLine(String commandLine) {
+		this.commandLine = commandLine;
+	}
+
+	public String getCommandArguments() {
+		return commandArguments;
+	}
+
+	public void setCommandArguments(String commandArguments) {
+		this.commandArguments = commandArguments;
+	}
+
+	public String getWorkingDirectory() {
+		return workingDirectory;
+	}
+
+	public void setWorkingDirectory(String workingDirectory) {
+		this.workingDirectory = workingDirectory;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + clusterId;
 		result = prime * result + ((clusterName == null) ? 0 : clusterName.hashCode());
+		result = prime * result + ((commandArguments == null) ? 0 : commandArguments.hashCode());
+		result = prime * result + ((commandLine == null) ? 0 : commandLine.hashCode());
 		result = prime * result + jobId;
 		result = prime * result + ((jobName == null) ? 0 : jobName.hashCode());
 		result = prime * result + jobTypeId;
@@ -94,6 +123,16 @@ public class Job {
 			if (other.clusterName != null)
 				return false;
 		} else if (!clusterName.equals(other.clusterName))
+			return false;
+		if (commandArguments == null) {
+			if (other.commandArguments != null)
+				return false;
+		} else if (!commandArguments.equals(other.commandArguments))
+			return false;
+		if (commandLine == null) {
+			if (other.commandLine != null)
+				return false;
+		} else if (!commandLine.equals(other.commandLine))
 			return false;
 		if (jobId != other.jobId)
 			return false;
@@ -121,7 +160,10 @@ public class Job {
 	public String toString() {
 		return "Job [jobId=" + jobId + ", jobName=" + jobName + ", jobTypeId=" + jobTypeId + ", jobTypeName="
 				+ jobTypeName + ", status=" + status + ", clusterId=" + clusterId + ", clusterName=" + clusterName
-				+ "]";
+				+ ", commandLine=" + commandLine + ", commandArguments=" + commandArguments + ", workingDirectory="
+				+ workingDirectory + "]";
 	}
+
+	
 	
 }

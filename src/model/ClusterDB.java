@@ -28,7 +28,7 @@ public class ClusterDB {
 		try {
 			do{
 				clusterId = DBAccess.getInstance().createCluster(cluster);			
-				if (clusterId < 0) {
+				if (clusterId >= 0) {
 					cluster.setClusterId(clusterId);
 					clusters.add(cluster);
 				}
@@ -70,14 +70,6 @@ public class ClusterDB {
 		writeLock.lock();
 		try {
 			DBAccess.getInstance().updateCluster(cluster);
-					
-			for (Cluster c: clusters) {
-				if (cluster.getClusterId() == c.getClusterId()) {
-					c.setClusterName(cluster.getClusterName());
-					c.setStatus(cluster.getStatus());
-					break;
-				}
-			}
 		}
 		finally {
 			writeLock.unlock();

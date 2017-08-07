@@ -44,20 +44,14 @@ public class Main{
 		}
 		
 		
-		if(args[0].equals("master")){
-			//String logConfig = prop.getProperty("masterLogConfig").trim();
-			//PropertyConfigurator.configure(logConfig);
-			
+		if(args[0].equals("master")){			
 			SwingUtilities.invokeLater(new Runnable(){
 				public void run() {
 					MasterManagerController.getInstance().start();
 				}
 			});
 		}
-		else if(args[0].equals("cluster")){
-			//String logConfig = prop.getProperty("clusterLogConfig").trim();			
-			//PropertyConfigurator.configure(logConfig);
-			
+		else if(args[0].equals("cluster")){			
 			SwingUtilities.invokeLater(new Runnable(){				
 				public void run() {
 					ClusterManagerController.getInstance().start();
